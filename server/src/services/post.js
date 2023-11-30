@@ -6,9 +6,9 @@ import db from "../models";
 export const getPostsService = () => new Promise(async (resolve, reject) => {
     try {
         const response = await db.Post.findAll({
-            raw: true    ,
-                                        //attributes: []  lấy các phần tử cần 
-         post:['imagesId','price','acreage','createdAt','address','descriptionId','title','cateloryCode','userId','overviewId']
+            raw: true,
+            //attributes: []  lấy các phần tử cần 
+            post: ['imagesId', 'price', 'acreage', 'createdAt', 'address', 'descriptionId', 'title', 'cateloryCode', 'userId', 'overviewId']
         })
         resolve({
             err: resolve ? 0 : 1,
@@ -21,31 +21,31 @@ export const getPostsService = () => new Promise(async (resolve, reject) => {
     }
 })
 
-// export const getNewPostsService = () => new Promise(async (resolve, reject) => {
-//     try {
-//         const response = await db.Post.findAll({
-//             raw: true  ,  
-//                                         //attributes: []  lấy các phần tử cần 
-//             nest : true,
-//             offset:0,
-//             order:[['createdAt','DESC']],
-//             limit:+process.env.LIMIT,
-//             // include:[
-//             //     // {model: db.Post,as:'Post',attributes:[]},
-//             //     // {model: db.Attibute,as:'Attibute',attributes:['price','acreage','published','hashtag']},
-//             //     // {model: db.User,as:'User',attributes:['name','phone']},
+export const getPostsLimitService = (page, { limmitPost, ...query }) => new Promise(async (resolve, reject) => {
+    try {
+        let offset = (!page || +page <= 1) ? 0 : (+page - 1)
+        const queries = {...query}
+        const limit = +limmitPost || +process.env.LIMIT
+        queries.limit=limit
+        const response = await db.Post.findAndCountAll({
+            where:query,
+            raw: true,
+            //attributes: []  lấy các phần tử cần 
+            nest: true,
 
+            ...queries,
+            offset: offset * (+process.env.LIMIT) || 0,
+            limit: +process.env.LIMIT,
 
-//             // ],
-//              post:['imagesId','price','acreage','createdAt','address','descriptionId','title','cateloryCode','userId','overviewId']
-//         })
-//         resolve({
-//             err: resolve ? 0 : 1,
-//             msg: resolve ? 'ok' : 'fail',
-//             response
-//         })
+            post: ['imagesId', 'price', 'acreage', 'createdAt', 'address', 'descriptionId', 'title', 'cateloryCode', 'userId', 'overviewId']
+        })
+        resolve({
+            err: resolve ? 0 : 1,
+            msg: resolve ? 'ok' : 'fail',
+            response
+        })
 
-//     } catch (error) {
-//         reject(error)
-//     }
-// })
+    } catch (error) {
+        reject(error)
+    }
+})
