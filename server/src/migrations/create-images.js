@@ -25,3 +25,4 @@ module.exports = {
         await queryInterface.dropTable('Imagess');
     }
 };
+//asdas
